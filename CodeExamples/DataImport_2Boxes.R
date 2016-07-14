@@ -10,7 +10,8 @@ setwd("~/Dropbox (2.0)/1_Teaching/3_Seminare/MouselabWeb/EADMSummerSchool2016")
 
 # some libraries we might need
 # install.packages('dplyr','ggplot2')
-require(dplyr,ggplot2)
+require(dplyr)
+require(ggplot2)
 
 # read rawdata files
 rawdata <- read.table("CodeExamples/data/Demo2Boxes_proc.csv", header=TRUE, sep=',') # raw
@@ -28,8 +29,23 @@ View(rawdata)
   length(rawdata.sum$subject)
   # how did people choose
   table(rawdata.sum$choice)
-
-
+  # how many acquisitions per participant
+  ggplot(rawdata.sum, aes(x = subject, y = maxcount)) +
+    geom_point() +
+    theme_bw()
+  # how long did each participant take
+    # sum up time variables - all of them start with t_
+    time <- 
+      rawdata.sum %>%
+      select(starts_with('t_')) %>%
+      mutate(overall_time = rowSums(.))
+    # add suject identifier
+    time$subject <- rawdata.sum$subject
+  #plot
+    ggplot(time, aes(x = subject, y =  overall_time)) +
+      geom_point() + 
+      theme_bw()
+  
 
 
 
