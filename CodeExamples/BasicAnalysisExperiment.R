@@ -15,23 +15,50 @@
   require(ggplot2)
 
 # read rawdata file
-  experiment.raw.sum <- read.table("CodeExamples/data/XXX.csv", header=TRUE, sep=',') # raw
-  experiment.raw <- read.table("CodeExamples/data/XXX.csv", header=TRUE, sep=',') # raw
+  food1.raw.sum <- read.table("CodeExamples/data/food1_proc_sum1.csv", header=TRUE, sep=',') # food1 sum 
+  food2.raw.sum <- read.table("CodeExamples/data/food2_proc_sum1.csv", header=TRUE, sep=',') # food2 sum
+  food1.raw <- read.table("CodeExamples/data/food1_proc.csv", header=TRUE, sep=',') # food1
+  food2.raw <- read.table("CodeExamples/data/food2_proc.csv", header=TRUE, sep=',') # food2
+  
+  food1.raw.sum$t_choice_1 <- NULL # remove column from old naming
+  food1.raw.sum$t_choice_2 <- NULL 
+  food2.raw.sum$t_choice_1 <- NULL 
+  food2.raw.sum$t_choice_2 <- NULL 
+  
+  food1.raw.sum$f_choice_1 <- NULL
+  food1.raw.sum$f_choice_2 <- NULL
+  food2.raw.sum$f_choice_1 <- NULL
+  food2.raw.sum$f_choice_2 <- NULL
+  
+  food1.raw$t_choice_1 <- NULL # remove column from old naming
+  food1.raw$t_choice_2 <- NULL 
+  food2.raw$t_choice_1 <- NULL 
+  food2.raw$t_choice_2 <- NULL 
+  
+  food1.raw$f_choice_1 <- NULL
+  food1.raw$f_choice_2 <- NULL
+  food2.raw$f_choice_1 <- NULL
+  food2.raw$f_choice_2 <- NULL
+  
+  food1.raw.sum$t_choiceA <- 0
+# merge data files
+  food.raw.sum <- rbind(food1.raw.sum, food2.raw.sum)
+  food.raw <- rbind(food1.raw, food2.raw)
 
 # display summary version of data file
-  View(experiment.raw)
-  View(experiment.raw.sum)
+  View(food.raw)
+  View(food.raw.sum)
 
 # data cleaning
-  # raw.clean.sum <- experiment.raw.sum
-  # raw.clean <- experiment.raw
+  raw.clean.sum <- food.raw.sum
+  raw.clean <- food.raw
   
 # descriptive stats ----
 
   # how many subjects 
-  length(raw.clean$subject)
+  length(unique(raw.clean$subject))
   # how did people choose
-  table(raw.clean$choice)
+  table(raw.clean.sum$choice)
   # how many acquisitions per participant
   ggplot(raw.clean, aes(x = subject, y = maxcount)) +
     geom_point() +
@@ -39,18 +66,18 @@
   # how long did each participant take
     # sum up time variables - all of them start with t_
     time <- 
-      rawdata.sum %>%
+      raw.clean.sum %>%
       select(starts_with('t_')) %>%
       mutate(overall_time = rowSums(.))
     # add suject identifier
-    time$subject <- rawdata.sum$subject
+    time$subject <- raw.clean.sum$subject
   # plot
     ggplot(time, aes(x = subject, y =  overall_time)) +
       geom_point() + 
       theme_bw()
   # how long was each cell openend?
     cell.time <- 
-      rawdata %>%
+      raw.clean %>%
       filter(event == 'mouseout') %>%
       group_by(boxname,subject) %>%
       summarise(m_time = mean(boxtime),
@@ -59,26 +86,26 @@
   
 # first and last acquisition ----
     # first acquisition
-    rawdata %>%
+    raw.clean %>%
       filter(counter == 1) %>%
       count(boxname)
     # last acquistion (= choice)
-    rawdata %>%
+    raw.clean %>%
       group_by(subject) %>%
       filter(counter == max(counter)) %>%
       count(boxname)
     # last acquistion (really)
-    rawdata %>%
+    raw.clean %>%
       filter(event == 'mouseout') %>%
       group_by(subject) %>%
       filter(counter == max(counter)) %>%
       count(boxname)
 
 # all boxes openend? ----    
-    names <- unique(as.character(rawdata$boxname)) # get unique cell names
-    names <- data.frame(n = names[!names %in% c('btn1', 'btn2')]) # remove buttons
+    names <- unique(as.character(raw.clean$boxname)) # get unique cell names
+    names <- data.frame(n = names[!names %in% c('choiceA', 'choiceB')]) # remove buttons
     
-    summary.boxes <- rawdata %>%
+    summary.boxes <- raw.clean %>%
                      filter(event == 'mouseout') %>%
                      group_by(subject) %>%
                      do(check = setequal(.$boxname, names$n))
