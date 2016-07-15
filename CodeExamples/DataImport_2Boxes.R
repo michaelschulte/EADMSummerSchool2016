@@ -46,7 +46,3 @@
     ggplot(time, aes(x = subject, y =  overall_time)) +
       geom_point() + 
       theme_bw()
-  
-
-
-
