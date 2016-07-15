@@ -48,6 +48,14 @@
     ggplot(time, aes(x = subject, y =  overall_time)) +
       geom_point() + 
       theme_bw()
+  # how long was each cell openend?
+    cell.time <- 
+      rawdata %>%
+      filter(event == 'mouseout') %>%
+      group_by(boxname,subject) %>%
+      summarise(m_time = mean(boxtime),
+                sd_time = sd(boxtime),
+                sum_time = sum(boxtime))
   
 # first and last acquisition ----
     # first acquisition
@@ -70,8 +78,9 @@
     names <- unique(as.character(rawdata$boxname)) # get unique cell names
     names <- data.frame(n = names[!names %in% c('btn1', 'btn2')]) # remove buttons
     
-t <- rawdata %>%
-      group_by(subject) %>%
-      (do(check = (setequal(.$boxname, names$n))))
-    tidy(t$check)
+    summary.boxes <- rawdata %>%
+                     filter(event == 'mouseout') %>%
+                     group_by(subject) %>%
+                     do(check = setequal(.$boxname, names$n))
     
+    unlist(summary.boxes$check)
