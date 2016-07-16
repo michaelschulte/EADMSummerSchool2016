@@ -102,4 +102,4 @@
                      group_by(subject) %>%
                      do(check = setequal(.$boxname, names$n))
     
-    unlist(summary.boxes$check
+    unlist(summary.boxes$check`
