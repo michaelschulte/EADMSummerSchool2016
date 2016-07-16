@@ -43,6 +43,6 @@
     # add suject identifier
     time$subject <- rawdata.sum$subject
   # plot
-    ggplot(time, aes(x = subject, y =  overall_time)) +
+    ggplot(time, aes(x = subject, y = overall_time)) +
       geom_point() + 
       theme_bw()
