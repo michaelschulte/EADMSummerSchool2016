@@ -1,4 +1,4 @@
-# Basic Analysis of Experiment Data 
+# Basic Analysis of Experiment Data Food
 # Michael Schulte-Mecklenbeck
 # EADM Summer School 2016
 
@@ -57,15 +57,15 @@
       mutate(overall_time = rowSums(.))
     # write overall_time back to main df
     food.raw.sum$overall_time <- time$overall_time
-  # plot
-    ggplot(food.raw.sum, aes(x = subject, y =  overall_time)) + #, colour = expname
-      geom_point() + 
+  # denisty plot
+    ggplot(food.raw.sum, aes(x =  overall_time)) + #, colour = expname
+      geom_density() + 
       theme_bw() 
   # how long was each cell openend?
     cell.time <- 
       food.raw %>%
       filter(event == 'mouseout') %>%
-      group_by(boxname,subject) %>%
+      group_by(boxname, subject) %>%
       summarise(m_time = mean(boxtime),
                 sd_time = sd(boxtime),
                 sum_time = sum(boxtime))
@@ -102,5 +102,4 @@
                      group_by(subject) %>%
                      do(check = setequal(.$boxname, names$n))
     
-    unlist(summary.boxes$check)
-    
+    unlist(summary.boxes$check
